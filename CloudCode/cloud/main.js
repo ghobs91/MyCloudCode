@@ -60,7 +60,7 @@ Parse.Cloud.define("eBayCategorySearch", function (request, response) {
     params: {
       'OPERATION-NAME': 'findItemsByKeywords',
       'SERVICE-VERSION': '1.12.0',
-      'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+      'SECURITY-APPNAME': '*APPNAME GOES HERE*',
       'GLOBAL-ID': 'EBAY-US',
       'RESPONSE-DATA-FORMAT': 'JSON',
       'itemFilter(0).name=ListingType': 'itemFilter(0).value=FixedPrice',
@@ -351,7 +351,7 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
                   params: { 
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
@@ -380,7 +380,7 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
                   params: { 
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
@@ -551,7 +551,7 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
                   params: { 
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
@@ -580,7 +580,7 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
                   params: { 
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
@@ -800,7 +800,7 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -827,7 +827,7 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -949,189 +949,6 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
 
 
 
-Parse.Cloud.define("MatchCenterTEST", function (request, response) {
-  //defines which parse class to iterate through
-  var matchCenterItem = Parse.Object.extend("matchCenterItem");
-  var query = new Parse.Query(matchCenterItem);
-  query.equalTo('parent', Parse.User.current());
-
-  var promises = [];
-  var searchTerms = [];
-
-  //setting the limit of items at 10 for now
-  query.limit(20);
-
-  query.find()
-    .then(function (results) {
-      if (results.length > 0) {
-
-        for (i = 0; i < results.length; i++) {
-          // ... later in your loop where you populate promises:
-          var searchTerm = results[i].get('searchTerm');
-          // add it to the array just like you add the promises:
-          searchTerms.push(searchTerm);
-
-          url = 'http://svcs.ebay.com/services/search/FindingService/v1';
-          //push function containing criteria for every matchCenterItem into promises array
-          promises.push((function () {
-
-            var httpRequestPromiseArray = [];
-//              
-//            if (results[i].get('itemLocation') == 'US') {
-//              console.log('americuh!');
-//              var eBayHttpRequestPromise = Parse.Cloud.httpRequest({
-//                url: url,
-//                params: {
-//                  'OPERATION-NAME': 'findItemsByKeywords',
-//                  'SERVICE-VERSION': '1.12.0',
-//                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
-//                  'GLOBAL-ID': 'EBAY-US',
-//                  'RESPONSE-DATA-FORMAT': 'JSON',
-//                  'REST-PAYLOAD&sortOrder': 'BestMatch',
-//                  'paginationInput.entriesPerPage': '10',
-////                  'affiliate.trackingId': '*trackingID*',
-////                  'affiliate.networkId': '9',
-//                  'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)': 'New',
-//                  'itemFilter(0).value(1)': '1500',
-//                  'itemFilter(0).value(2)': results[i].get('itemCondition'),
-//                  'itemFilter(1).name=MaxPrice&itemFilter(1).value': results[i].get('maxPrice'),
-//                  'itemFilter(1).paramName=Currency&itemFilter(1).paramValue': 'USD',
-//                  'itemFilter(2).name=MinPrice&itemFilter(2).value': results[i].get('minPrice'),
-//                  'itemFilter(2).paramName=Currency&itemFilter(2).paramValue': 'USD',
-//                  'itemFilter(3).name=LocatedIn&itemFilter(3).value': 'US',
-//                  'itemFilter(4).name=ListingType&itemFilter(4).value': 'FixedPrice',
-//                  'keywords': results[i].get('searchTerm'),
-//                }
-//              });
-//            } 
-//            
-//            else if (results[i].get('itemLocation') == 'WorldWide') {
-//              console.log('Mr worlwide!');
-//              var eBayHttpRequestPromise = Parse.Cloud.httpRequest({
-//                url: url,
-//                params: {
-//                  'OPERATION-NAME': 'findItemsByKeywords',
-//                  'SERVICE-VERSION': '1.12.0',
-//                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
-//                  'GLOBAL-ID': 'EBAY-US',
-//                  'RESPONSE-DATA-FORMAT': 'JSON',
-//                  'REST-PAYLOAD&sortOrder': 'BestMatch',
-//                  'paginationInput.entriesPerPage': '10',
-////                  'affiliate.trackingId': '*trackingID*',
-////                  'affiliate.networkId': '9',
-//                  'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)': 'New',
-//                  'itemFilter(0).value(1)': '1500',
-//                  'itemFilter(0).value(2)': results[i].get('itemCondition'),
-//                  'itemFilter(1).name=MaxPrice&itemFilter(1).value': results[i].get('maxPrice'),
-//                  'itemFilter(1).paramName=Currency&itemFilter(1).paramValue': 'USD',
-//                  'itemFilter(2).name=MinPrice&itemFilter(2).value': results[i].get('minPrice'),
-//                  'itemFilter(2).paramName=Currency&itemFilter(2).paramValue': 'USD',
-//                  // 'itemFilter(3).name=LocatedIn&itemFilter(3).value' : 'US',
-//                  'itemFilter(3).name=ListingType&itemFilter(3).value': 'FixedPrice',
-//                  'keywords': results[i].get('searchTerm'),
-//                }
-//              });
-//            }
-//            
-//            httpRequestPromiseArray.push(eBayHttpRequestPromise);  
-            
-            console.log('about to define AmazonHttpRequestPromise');
-              
-            var AmazonHttpRequestPromise = Parse.Cloud.httpRequest({
-                url: url,
-                params: {
-                  'AWSAccessKeyId': 'AKIAJE7F5H7WRHULUUWQ',
-                  'AssociateTag': 'denarri07-20',
-                  'Keywords': 'harry+potter',
-                  'Operation': 'ItemSearch',
-                  'SearchIndex': 'Books',
-                  'Service': 'AWSECommerceService',
-                  'Version': '2013-08-01',
-                }
-              });
-              
-              console.log('AmazonHttpRequestPromise looks like this:' + AmazonHttpRequestPromise);
-              
-            //httpRequestPromiseArray.push(AmazonHttpRequestPromise);  
-
-            return AmazonHttpRequestPromise;
-          })());
-        }
-      }
-
-      //when finished pushing all the httpRequest functions into promise array, do the following  
-      Parse.Promise.when(promises)
-        .then(function (results) {
-          console.log('Amazon results are:' + results);
-          var eBayResults = [];
-
-          for (var i = 0; i < arguments.length; i++) {
-            var httpResponse = arguments[i];
-            // since they're in the same order, this is OK:
-            var searchTerm = searchTerms[i];
-            // pass it as a param:
-            var top3 = collectEbayResults(httpResponse.text, searchTerm);
-            eBayResults.push(top3);
-          };
-
-          console.log('izayak habibi, eBayResults are the following:' + eBayResults);
-
-          function collectEbayResults(eBayResponseText, searchTerm) {
-
-            console.log('so heres what the ebayresponsetext iz:' + eBayResponseText);
-            var ebayResponse = JSON.parse(eBayResponseText);
-
-            var matchCenterItems = [];
-            //Parses through ebay's response, pushes each individual item and its properties into an array  
-            ebayResponse.findItemsByKeywordsResponse.forEach(function (itemByKeywordsResponse) {
-              itemByKeywordsResponse.searchResult.forEach(function (result) {
-
-                if (result.item) {
-                  result.item.forEach(function (item) {
-                    matchCenterItems.push(item);
-                  });
-                }
-
-              });
-            });
-
-            // Creates array of items and their properties for every MC Item
-            var top3 = {
-              'Top 3': [{
-                "Search Term": searchTerm
-              }]
-            };
-
-            matchCenterItems.forEach(function (item) {
-
-              top3['Top 3'].push({
-                'Title': item.title[0],
-                'Price': item.sellingStatus[0].convertedCurrentPrice[0].__value__,
-                'Image URL': item.galleryURL[0],
-                'Item URL': item.viewItemURL[0],
-                'Item Condition': item.condition[0].conditionDisplayName[0]
-              });
-            });
-
-            return top3;
-          }
-            
-          eBayResults.reverse();     
-
-          response.success(
-            eBayResults
-          );
-
-        }, function (err) {
-          console.log('error!' + err);
-          response.error('DAMN IT MAN');
-        });
-    });
-});
-
-
-
-
 
 
 
@@ -1199,7 +1016,7 @@ function processUser(user) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1222,7 +1039,7 @@ function processUser(user) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1499,7 +1316,7 @@ function processUserTEST(user) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1524,7 +1341,7 @@ function processUserTEST(user) {
             params: {
               'OPERATION-NAME': 'findItemsByKeywords',
               'SERVICE-VERSION': '1.12.0',
-              'SECURITY-APPNAME': 'AndrewGh-2d30-4c8d-a9cd-248083bc4d0f',
+              'SECURITY-APPNAME': '*APPNAME GOES HERE*',
               'GLOBAL-ID': 'EBAY-US',
               'RESPONSE-DATA-FORMAT': 'JSON',
               'REST-PAYLOAD&sortOrder': 'BestMatch',

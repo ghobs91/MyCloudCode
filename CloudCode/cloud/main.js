@@ -10,7 +10,7 @@ Parse.Cloud.define("userCategoryCreate", function(request, response) {
     newUserCategory.set("itemCondition");
     newUserCategory.set("itemLocation");
     newUserCategory.set("parent", Parse.User.current());
-    newUserCategory.save({ 
+    newUserCategory.save({
 
       success: function (){
         console.log ('userCategory successfully created!');
@@ -32,7 +32,7 @@ Parse.Cloud.define("mcComparisonArrayCreate", function(request, response) {
     var newMComparisonArray = new mComparisonArray();
     newMComparisonArray.set("Name", "MatchCenter");
     newMComparisonArray.set("parent", Parse.User.current());
-    newMComparisonArray.save({ 
+    newMComparisonArray.save({
 
       success: function (){
         console.log ('newMComparisonArray successfully created!');
@@ -60,7 +60,7 @@ Parse.Cloud.define("eBayCategorySearch", function (request, response) {
     params: {
       'OPERATION-NAME': 'findItemsByKeywords',
       'SERVICE-VERSION': '1.12.0',
-      'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+      'SECURITY-APPNAME': 'APPNAME GOES HERE',
       'GLOBAL-ID': 'EBAY-US',
       'RESPONSE-DATA-FORMAT': 'JSON',
       'itemFilter(0).name=ListingType': 'itemFilter(0).value=FixedPrice',
@@ -100,7 +100,7 @@ Parse.Cloud.define("eBayCategorySearch", function (request, response) {
 
       var categoryNameResults = {};
 
-      // Collect two most frequent categoryNames  
+      // Collect two most frequent categoryNames
       items.forEach(function (item) {
         var categoryName = item.primaryCategory[0].categoryName;
         if (categoryNameResults[categoryName]) categoryNameResults[categoryName] ++;
@@ -182,45 +182,76 @@ Parse.Cloud.define("eBayCategorySearch", function (request, response) {
             isMatching = true;
           }
 
-          response.success({
-            "results": [{
+          /*Checks if the requeting client is Anroid by checking for a
+          boolean that only an Android client should send. I'm sure there's
+          some method to check the device automatically, but I cbf checking.
+          If it is Android, then it sends a the equivalent of a HashMap otherwise
+          it sends some complicated thing :P
+          */
+          if(request.params.android){
+            response.success({
               "Number of top categories": top2.length
-            }, {
               "Top category Ids": top2
-            }, {
               "Top category names": top2Names
-            }, {
               "Number of matches": userCategoriesMatchingTop2.length
-            }, {
               "User categories that match search": userCategoriesMatchingTop2
-            }, {
               "Matching Category Condition 1": matchingItemCondition1
-            }, {
               "Matching Category Condition 2": matchingItemCondition2
-            }, {
               "Matching Category Location 1": matchingItemLocation1
-            }, {
               "Matching Category Location 2": matchingItemLocation2
-            }, {
               "Matching Category MaxPrice 1": matchingMaxPrice1
-            }, {
               "Matching Category MaxPrice 2": matchingMaxPrice2
-            }, {
               "Matching Category MinPrice 1": matchingMinPrice1
-            }, {
               "Matching Category MinPrice 2": matchingMinPrice2
-            }, {
               "Search Term": matchingItemSearch
-            }, {
               "Matching Category Id 1": matchingItemCategoryId1
-            }, {
               "Matching Category Id 2": matchingItemCategoryId2
-            }, {
               "Matching Category Name 1": matchingCategoryName1
-            }, {
               "Matching Category Name 2": matchingCategoryName2
-            }, ]
-          });
+            });
+          } else {
+            response.success({
+              "results": [{
+                "Number of top categories": top2.length
+              }, {
+                "Top category Ids": top2
+              }, {
+                "Top category names": top2Names
+              }, {
+                "Number of matches": userCategoriesMatchingTop2.length
+              }, {
+                "User categories that match search": userCategoriesMatchingTop2
+              }, {
+                "Matching Category Condition 1": matchingItemCondition1
+              }, {
+                "Matching Category Condition 2": matchingItemCondition2
+              }, {
+                "Matching Category Location 1": matchingItemLocation1
+              }, {
+                "Matching Category Location 2": matchingItemLocation2
+              }, {
+                "Matching Category MaxPrice 1": matchingMaxPrice1
+              }, {
+                "Matching Category MaxPrice 2": matchingMaxPrice2
+              }, {
+                "Matching Category MinPrice 1": matchingMinPrice1
+              }, {
+                "Matching Category MinPrice 2": matchingMinPrice2
+              }, {
+                "Search Term": matchingItemSearch
+              }, {
+                "Matching Category Id 1": matchingItemCategoryId1
+              }, {
+                "Matching Category Id 2": matchingItemCategoryId2
+              }, {
+                "Matching Category Name 1": matchingCategoryName1
+              }, {
+                "Matching Category Name 2": matchingCategoryName2
+              }, ]
+            });
+          }
+
+
         },
         error: function (error) {
           //Error Callback
@@ -236,15 +267,6 @@ Parse.Cloud.define("eBayCategorySearch", function (request, response) {
   });
 });
 
-
-
-
-
-
-
-
-
-
 // Adds criteria info to userCategory object
 Parse.Cloud.define("userCategorySave", function(request, response) {
 
@@ -257,8 +279,8 @@ Parse.Cloud.define("userCategorySave", function(request, response) {
       newUserCategory.set("itemCondition", request.params.itemCondition);
       newUserCategory.set("itemLocation", request.params.itemLocation);
       newUserCategory.set("parent", Parse.User.current());
-      
-      newUserCategory.save({ 
+
+      newUserCategory.save({
 
         success: function (){
           console.log ('userCategory successfully created!');
@@ -294,7 +316,7 @@ Parse.Cloud.define("addToMatchCenter", function(request, response) {
   newMatchCenterItem.set("itemPriority", request.params.itemPriority);
   newMatchCenterItem.set("parent", Parse.User.current());
 
-  newMatchCenterItem.save({ 
+  newMatchCenterItem.save({
 
     success: function (){
       console.log ('MatchCenter Item successfully created!');
@@ -323,13 +345,13 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
     var matchCenterItem = Parse.Object.extend("matchCenterItem");
     var query = new Parse.Query(matchCenterItem);
     query.equalTo('parent', Parse.User.current())
-    
+
     var promises = [];
     var searchTerms = [];
 
     //setting the limit of items at 10 for now
     query.limit(10);
-  
+
       query.find().then(function(results) {
         if (results.length > 0){
 
@@ -342,21 +364,21 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
             url = 'http://svcs.ebay.com/services/search/FindingService/v1';
             //push function containing criteria for every matchCenterItem into promises array
             promises.push((function() {
-              
+
               if (results[i].get('itemLocation') == 'US')
               {
                 console.log('americuh!');
                 var httpRequestPromise = Parse.Cloud.httpRequest({
                   url: url,
-                  params: { 
+                  params: {
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
+                    'SECURITY-APPNAME' : 'APPNAME GOES HERE',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
                     'paginationInput.entriesPerPage' : '10',
-//                    'affiliate.trackingId': '*trackingID*',
+//                    'affiliate.trackingId': '5337584338',
 //                    'affiliate.networkId': '9',
                     'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)' : 'New',
                     'itemFilter(0).value(1)' : '1500',
@@ -377,15 +399,15 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
                 console.log('Mr worlwide!');
                 var httpRequestPromise = Parse.Cloud.httpRequest({
                   url: url,
-                  params: { 
+                  params: {
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
+                    'SECURITY-APPNAME' : 'APPNAME GOES HERE',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
                     'paginationInput.entriesPerPage' : '10',
-//                    'affiliate.trackingId': '*trackingID*',
+//                    'affiliate.trackingId': '5337584338',
 //                    'affiliate.networkId': '9',
                     'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)' : 'New',
                     'itemFilter(0).value(1)' : '1500',
@@ -406,7 +428,7 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
           }
         }
 
-        //when finished pushing all the httpRequest functions into promise array, do the following  
+        //when finished pushing all the httpRequest functions into promise array, do the following
         Parse.Promise.when(promises).then(function(results){
 
           var eBayResults = [];
@@ -428,8 +450,8 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
             var ebayResponse = JSON.parse(eBayResponseText)
 
             var matchCenterItems = [];
-                
-                //Parses through ebay's response, pushes each individual item and its properties into an array  
+
+                //Parses through ebay's response, pushes each individual item and its properties into an array
                 ebayResponse.findItemsByKeywordsResponse.forEach(function(itemByKeywordsResponse) {
                     itemByKeywordsResponse.searchResult.forEach(function(result) {
 
@@ -453,7 +475,7 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
                   var price = item.sellingStatus[0].convertedCurrentPrice[0].__value__;
                   var imgURL = item.galleryURL[0];
                   var itemURL = item.viewItemURL[0];
-                    
+
                   top3Titles.push(title);
                   top3Prices.push(price);
                   top3ImgURLS.push(imgURL);
@@ -461,28 +483,28 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
                 });
 
 
-                var top3 = 
+                var top3 =
                 {
-                  "Top 3": 
+                  "Top 3":
                   [
 
-                      { 
-                        "Title": top3Titles[0], 
-                        "Price": top3Prices[0], 
+                      {
+                        "Title": top3Titles[0],
+                        "Price": top3Prices[0],
                         "Image URL": top3ImgURLS[0],
                         "Item URL": top3ItemURLS[0]
                       },
-                    
-                      { 
-                        "Title": top3Titles[1], 
-                        "Price": top3Prices[1], 
+
+                      {
+                        "Title": top3Titles[1],
+                        "Price": top3Prices[1],
                         "Image URL": top3ImgURLS[1],
                         "Item URL": top3ItemURLS[1]
                       },
-                    
-                      { 
-                        "Title": top3Titles[2], 
-                        "Price": top3Prices[2], 
+
+                      {
+                        "Title": top3Titles[2],
+                        "Price": top3Prices[2],
                         "Image URL": top3ImgURLS[2],
                         "Item URL": top3ItemURLS[2]
                       },
@@ -494,7 +516,7 @@ Parse.Cloud.define("MatchCenter", function(request, response) {
                 }
                 return top3
           }
-         
+
           eBayResults.reverse();
 
           response.success
@@ -523,13 +545,13 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
     var matchCenterItem = Parse.Object.extend("matchCenterItem");
     var query = new Parse.Query(matchCenterItem);
     query.equalTo('parent', Parse.User.current());
-    
+
     var promises = [];
     var searchTerms = [];
 
     //setting the limit of items at 10 for now
     query.limit(20);
-  
+
     query.find().then(function(results) {
         if (results.length > 0){
 
@@ -542,21 +564,21 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
             url = 'http://svcs.ebay.com/services/search/FindingService/v1';
             //push function containing criteria for every matchCenterItem into promises array
             promises.push((function() {
-              
+
               if (results[i].get('itemLocation') == 'US')
               {
                 console.log('americuh!');
                 var httpRequestPromise = Parse.Cloud.httpRequest({
                   url: url,
-                  params: { 
+                  params: {
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
+                    'SECURITY-APPNAME' : 'APPNAME GOES HERE',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
                     'paginationInput.entriesPerPage' : '10',
-//                    'affiliate.trackingId': '*trackingID*',
+//                    'affiliate.trackingId': '5337584338',
 //                    'affiliate.networkId': '9',
                     'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)' : 'New',
                     'itemFilter(0).value(1)' : '1500',
@@ -577,15 +599,15 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
                 console.log('Mr worlwide!');
                 var httpRequestPromise = Parse.Cloud.httpRequest({
                   url: url,
-                  params: { 
+                  params: {
                     'OPERATION-NAME' : 'findItemsByKeywords',
                     'SERVICE-VERSION' : '1.12.0',
-                    'SECURITY-APPNAME' : '*APPNAME GOES HERE*',
+                    'SECURITY-APPNAME' : 'APPNAME GOES HERE',
                     'GLOBAL-ID' : 'EBAY-US',
                     'RESPONSE-DATA-FORMAT' : 'JSON',
                     'REST-PAYLOAD&sortOrder' : 'BestMatch',
                     'paginationInput.entriesPerPage' : '10',
-//                    'affiliate.trackingId': '*trackingID*',
+//                    'affiliate.trackingId': '5337584338',
 //                    'affiliate.networkId': '9',
                     'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)' : 'New',
                     'itemFilter(0).value(1)' : '1500',
@@ -606,7 +628,7 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
           }
         }
 
-        //when finished pushing all the httpRequest functions into promise array, do the following  
+        //when finished pushing all the httpRequest functions into promise array, do the following
         Parse.Promise.when(promises).then(function(results){
 
           var eBayResults = [];
@@ -628,8 +650,8 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
             var ebayResponse = JSON.parse(eBayResponseText);
 
             var matchCenterItems = [];
-                
-                //Parses through ebay's response, pushes each individual item and its properties into an array  
+
+                //Parses through ebay's response, pushes each individual item and its properties into an array
                 ebayResponse.findItemsByKeywordsResponse.forEach(function(itemByKeywordsResponse) {
                     itemByKeywordsResponse.searchResult.forEach(function(result) {
 
@@ -654,7 +676,7 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
                   var price = item.sellingStatus[0].convertedCurrentPrice[0].__value__;
                   var imgURL = item.galleryURL[0];
                   var itemURL = item.viewItemURL[0];
-                    
+
                   top3Titles.push(title);
                   top3Prices.push(price);
                   top3ImgURLS.push(imgURL);
@@ -662,91 +684,91 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
                 });
 
                 // 10 results per MC Item, only showing 4 by default
-                var top3 = 
+                var top3 =
                 {
-                  "Top 3": 
+                  "Top 3":
                   [
                       {
                          "Search Term": searchTerm
                       },
 
-                      { 
-                        "Title": top3Titles[0], 
-                        "Price": top3Prices[0], 
+                      {
+                        "Title": top3Titles[0],
+                        "Price": top3Prices[0],
                         "Image URL": top3ImgURLS[0],
                         "Item URL": top3ItemURLS[0]
                       },
-                    
-                      { 
-                        "Title": top3Titles[1], 
-                        "Price": top3Prices[1], 
+
+                      {
+                        "Title": top3Titles[1],
+                        "Price": top3Prices[1],
                         "Image URL": top3ImgURLS[1],
                         "Item URL": top3ItemURLS[1]
                       },
-                    
-                      { 
-                        "Title": top3Titles[2], 
-                        "Price": top3Prices[2], 
+
+                      {
+                        "Title": top3Titles[2],
+                        "Price": top3Prices[2],
                         "Image URL": top3ImgURLS[2],
                         "Item URL": top3ItemURLS[2]
                       },
 
-                      { 
-                        "Title": top3Titles[3], 
-                        "Price": top3Prices[3], 
+                      {
+                        "Title": top3Titles[3],
+                        "Price": top3Prices[3],
                         "Image URL": top3ImgURLS[3],
                         "Item URL": top3ItemURLS[3]
                       },
 
-                      { 
-                        "Title": top3Titles[4], 
-                        "Price": top3Prices[4], 
+                      {
+                        "Title": top3Titles[4],
+                        "Price": top3Prices[4],
                         "Image URL": top3ImgURLS[4],
                         "Item URL": top3ItemURLS[4]
                       },
 
-                      { 
-                        "Title": top3Titles[5], 
-                        "Price": top3Prices[5], 
+                      {
+                        "Title": top3Titles[5],
+                        "Price": top3Prices[5],
                         "Image URL": top3ImgURLS[5],
                         "Item URL": top3ItemURLS[5]
                       },
 
-                      { 
-                        "Title": top3Titles[6], 
-                        "Price": top3Prices[6], 
+                      {
+                        "Title": top3Titles[6],
+                        "Price": top3Prices[6],
                         "Image URL": top3ImgURLS[6],
                         "Item URL": top3ItemURLS[6]
                       },
 
-                      { 
-                        "Title": top3Titles[7], 
-                        "Price": top3Prices[7], 
+                      {
+                        "Title": top3Titles[7],
+                        "Price": top3Prices[7],
                         "Image URL": top3ImgURLS[7],
                         "Item URL": top3ItemURLS[7]
                       },
 
-                      { 
-                        "Title": top3Titles[8], 
-                        "Price": top3Prices[8], 
+                      {
+                        "Title": top3Titles[8],
+                        "Price": top3Prices[8],
                         "Image URL": top3ImgURLS[8],
                         "Item URL": top3ItemURLS[8]
                       },
-                                          
-                      { 
-                        "Title": top3Titles[9], 
-                        "Price": top3Prices[9], 
+
+                      {
+                        "Title": top3Titles[9],
+                        "Price": top3Prices[9],
                         "Image URL": top3ImgURLS[9],
                         "Item URL": top3ItemURLS[9]
                       },
-                      
+
                   ]
                 };
                 return top3;
           }
 
           eBayResults.reverse();
-                      
+
           response.success
           (
             eBayResults
@@ -800,12 +822,12 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
                   'paginationInput.entriesPerPage': '10',
-//                  'affiliate.trackingId': '*trackingID*',
+//                  'affiliate.trackingId': '5337584338',
 //                  'affiliate.networkId': '9',
                   'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)': 'New',
                   'itemFilter(0).value(1)': '1500',
@@ -819,7 +841,7 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
                   'keywords': results[i].get('searchTerm'),
                 }
               });
-            } 
+            }
             else if (results[i].get('itemLocation') == 'WorldWide') {
               console.log('Mr worlwide!');
               var httpRequestPromise = Parse.Cloud.httpRequest({
@@ -827,12 +849,12 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
                   'paginationInput.entriesPerPage': '10',
-//                  'affiliate.trackingId': '*trackingID*',
+//                  'affiliate.trackingId': '5337584338',
 //                  'affiliate.networkId': '9',
                   'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)': 'New',
                   'itemFilter(0).value(1)': '1500',
@@ -853,7 +875,7 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
         }
       }
 
-      //when finished pushing all the httpRequest functions into promise array, do the following  
+      //when finished pushing all the httpRequest functions into promise array, do the following
       Parse.Promise.when(promises)
         .then(function (results) {
 
@@ -876,11 +898,11 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
             var ebayResponse = JSON.parse(eBayResponseText);
 
             var matchCenterItems = [];
-            //Parses through ebay's response, pushes each individual item and its properties into an array  
+            //Parses through ebay's response, pushes each individual item and its properties into an array
             ebayResponse.findItemsByKeywordsResponse.forEach(function (itemByKeywordsResponse) {
-                
+
                 if (itemByKeywordsResponse.searchResult){
-                    
+
                     itemByKeywordsResponse.searchResult.forEach(function (result) {
 
                         if (result.item) {
@@ -891,7 +913,7 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
 
                     });
                 }
-              
+
             });
 
             // Creates array of items and their properties for every MC Item
@@ -902,13 +924,13 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
             };
 
             matchCenterItems.forEach(function (item) {
-                
+
 //              if (item.galleryURL[0]){
 //                var imageURL = item.galleryURL[0];
 //              }
 //              else{
 //                var imageUrl = someErrorImageURL;
-//              } 
+//              }
 
               top3['Top 3'].push({
                 'Title': item.title[0],
@@ -917,13 +939,13 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
                 'Item URL': item.viewItemURL[0],
                 'Item Condition': item.condition[0].conditionDisplayName[0]
               });
-                
+
             });
 
             return top3;
           }
-            
-          eBayResults.reverse();     
+
+          eBayResults.reverse();
 
           response.success(
             eBayResults
@@ -945,6 +967,189 @@ Parse.Cloud.define("MatchCenter3", function (request, response) {
 
 
 
+
+
+
+
+Parse.Cloud.define("MatchCenterTEST", function (request, response) {
+  //defines which parse class to iterate through
+  var matchCenterItem = Parse.Object.extend("matchCenterItem");
+  var query = new Parse.Query(matchCenterItem);
+  query.equalTo('parent', Parse.User.current());
+
+  var promises = [];
+  var searchTerms = [];
+
+  //setting the limit of items at 10 for now
+  query.limit(20);
+
+  query.find()
+    .then(function (results) {
+      if (results.length > 0) {
+
+        for (i = 0; i < results.length; i++) {
+          // ... later in your loop where you populate promises:
+          var searchTerm = results[i].get('searchTerm');
+          // add it to the array just like you add the promises:
+          searchTerms.push(searchTerm);
+
+          url = 'http://svcs.ebay.com/services/search/FindingService/v1';
+          //push function containing criteria for every matchCenterItem into promises array
+          promises.push((function () {
+
+            var httpRequestPromiseArray = [];
+//
+//            if (results[i].get('itemLocation') == 'US') {
+//              console.log('americuh!');
+//              var eBayHttpRequestPromise = Parse.Cloud.httpRequest({
+//                url: url,
+//                params: {
+//                  'OPERATION-NAME': 'findItemsByKeywords',
+//                  'SERVICE-VERSION': '1.12.0',
+//                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
+//                  'GLOBAL-ID': 'EBAY-US',
+//                  'RESPONSE-DATA-FORMAT': 'JSON',
+//                  'REST-PAYLOAD&sortOrder': 'BestMatch',
+//                  'paginationInput.entriesPerPage': '10',
+////                  'affiliate.trackingId': '5337584338',
+////                  'affiliate.networkId': '9',
+//                  'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)': 'New',
+//                  'itemFilter(0).value(1)': '1500',
+//                  'itemFilter(0).value(2)': results[i].get('itemCondition'),
+//                  'itemFilter(1).name=MaxPrice&itemFilter(1).value': results[i].get('maxPrice'),
+//                  'itemFilter(1).paramName=Currency&itemFilter(1).paramValue': 'USD',
+//                  'itemFilter(2).name=MinPrice&itemFilter(2).value': results[i].get('minPrice'),
+//                  'itemFilter(2).paramName=Currency&itemFilter(2).paramValue': 'USD',
+//                  'itemFilter(3).name=LocatedIn&itemFilter(3).value': 'US',
+//                  'itemFilter(4).name=ListingType&itemFilter(4).value': 'FixedPrice',
+//                  'keywords': results[i].get('searchTerm'),
+//                }
+//              });
+//            }
+//
+//            else if (results[i].get('itemLocation') == 'WorldWide') {
+//              console.log('Mr worlwide!');
+//              var eBayHttpRequestPromise = Parse.Cloud.httpRequest({
+//                url: url,
+//                params: {
+//                  'OPERATION-NAME': 'findItemsByKeywords',
+//                  'SERVICE-VERSION': '1.12.0',
+//                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
+//                  'GLOBAL-ID': 'EBAY-US',
+//                  'RESPONSE-DATA-FORMAT': 'JSON',
+//                  'REST-PAYLOAD&sortOrder': 'BestMatch',
+//                  'paginationInput.entriesPerPage': '10',
+////                  'affiliate.trackingId': '5337584338',
+////                  'affiliate.networkId': '9',
+//                  'outputSelector=AspectHistogram&itemFilter(0).name=Condition&itemFilter(0).value(0)': 'New',
+//                  'itemFilter(0).value(1)': '1500',
+//                  'itemFilter(0).value(2)': results[i].get('itemCondition'),
+//                  'itemFilter(1).name=MaxPrice&itemFilter(1).value': results[i].get('maxPrice'),
+//                  'itemFilter(1).paramName=Currency&itemFilter(1).paramValue': 'USD',
+//                  'itemFilter(2).name=MinPrice&itemFilter(2).value': results[i].get('minPrice'),
+//                  'itemFilter(2).paramName=Currency&itemFilter(2).paramValue': 'USD',
+//                  // 'itemFilter(3).name=LocatedIn&itemFilter(3).value' : 'US',
+//                  'itemFilter(3).name=ListingType&itemFilter(3).value': 'FixedPrice',
+//                  'keywords': results[i].get('searchTerm'),
+//                }
+//              });
+//            }
+//
+//            httpRequestPromiseArray.push(eBayHttpRequestPromise);
+
+            console.log('about to define AmazonHttpRequestPromise');
+
+            var AmazonHttpRequestPromise = Parse.Cloud.httpRequest({
+                url: url,
+                params: {
+                  'AWSAccessKeyId': 'AWSAccessKeyId goes here',
+                  'AssociateTag': 'AssociateTag goes here',
+                  'Keywords': 'harry+potter',
+                  'Operation': 'ItemSearch',
+                  'SearchIndex': 'Books',
+                  'Service': 'AWSECommerceService',
+                  'Version': '2013-08-01',
+                }
+              });
+
+              console.log('AmazonHttpRequestPromise looks like this:' + AmazonHttpRequestPromise);
+
+            //httpRequestPromiseArray.push(AmazonHttpRequestPromise);
+
+            return AmazonHttpRequestPromise;
+          })());
+        }
+      }
+
+      //when finished pushing all the httpRequest functions into promise array, do the following
+      Parse.Promise.when(promises)
+        .then(function (results) {
+          console.log('Amazon results are:' + results);
+          var eBayResults = [];
+
+          for (var i = 0; i < arguments.length; i++) {
+            var httpResponse = arguments[i];
+            // since they're in the same order, this is OK:
+            var searchTerm = searchTerms[i];
+            // pass it as a param:
+            var top3 = collectEbayResults(httpResponse.text, searchTerm);
+            eBayResults.push(top3);
+          };
+
+          console.log('izayak habibi, eBayResults are the following:' + eBayResults);
+
+          function collectEbayResults(eBayResponseText, searchTerm) {
+
+            console.log('so heres what the ebayresponsetext iz:' + eBayResponseText);
+            var ebayResponse = JSON.parse(eBayResponseText);
+
+            var matchCenterItems = [];
+            //Parses through ebay's response, pushes each individual item and its properties into an array
+            ebayResponse.findItemsByKeywordsResponse.forEach(function (itemByKeywordsResponse) {
+              itemByKeywordsResponse.searchResult.forEach(function (result) {
+
+                if (result.item) {
+                  result.item.forEach(function (item) {
+                    matchCenterItems.push(item);
+                  });
+                }
+
+              });
+            });
+
+            // Creates array of items and their properties for every MC Item
+            var top3 = {
+              'Top 3': [{
+                "Search Term": searchTerm
+              }]
+            };
+
+            matchCenterItems.forEach(function (item) {
+
+              top3['Top 3'].push({
+                'Title': item.title[0],
+                'Price': item.sellingStatus[0].convertedCurrentPrice[0].__value__,
+                'Image URL': item.galleryURL[0],
+                'Item URL': item.viewItemURL[0],
+                'Item Condition': item.condition[0].conditionDisplayName[0]
+              });
+            });
+
+            return top3;
+          }
+
+          eBayResults.reverse();
+
+          response.success(
+            eBayResults
+          );
+
+        }, function (err) {
+          console.log('error!' + err);
+          response.error('DAMN IT MAN');
+        });
+    });
+});
 
 
 
@@ -1016,7 +1221,7 @@ function processUser(user) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1039,7 +1244,7 @@ function processUser(user) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1095,17 +1300,17 @@ function buildEbayRequestPromises(eBayResponseText, shared) {
   var ebayResponse = JSON.parse(eBayResponseText);
   var matchCenterItems = [];
 
-  //Parses through ebay's response, pushes each individual item and its properties into an array  
+  //Parses through ebay's response, pushes each individual item and its properties into an array
   ebayResponse.findItemsByKeywordsResponse.forEach(function(itemByKeywordsResponse) {
     if (itemByKeywordsResponse.searchResult){
       itemByKeywordsResponse.searchResult.forEach(function(result) {
-      
+
         if (result.item) {
             result.item.forEach(function(item) {
                 matchCenterItems.push(item);
             });
         }
-          
+
       });
     }
   });
@@ -1144,7 +1349,7 @@ function matchCenterComparison(parentUser, eBayResults) {
 
   console.log('ando ishal');
 
-  // If eBay finds results for at least 
+  // If eBay finds results for at least
   if (eBayResults.length > 0) {
     console.log('yes the ebay results be longer than 0');
 
@@ -1159,7 +1364,7 @@ function matchCenterComparison(parentUser, eBayResults) {
     console.log('setup query criteria, about to run it');
     mComparisonQuery.find()
       .then(function(results) {
-        //No new items                      
+        //No new items
         if (results.length > 0) {
           console.log("No new items, you're good to go!");
 
@@ -1170,8 +1375,11 @@ function matchCenterComparison(parentUser, eBayResults) {
 
           installationQuery.first()
             .then(function(result) {
-              result.set('channels', ["noPush"]);
-              result.save();
+              if (result){
+                result.set('channels', ["noPush"]);
+                result.save();
+              }
+
             });
           ///////
           console.log('done updating channel');
@@ -1194,7 +1402,7 @@ function matchCenterComparison(parentUser, eBayResults) {
                 results[0].set('MCItems', eBayResults);
                 results[0].save();
               }
-             
+
 
               console.log('totally just updated the mComparisonArray, NBD');
             })
@@ -1214,8 +1422,12 @@ function matchCenterComparison(parentUser, eBayResults) {
 
                     installationQuery.first()
                       .then(function(result) {
-                        result.set('channels', ["highPush"]);
-                        result.save();
+
+                        if (result){
+                            result.set('channels', ["highPush"]);
+                            result.save();
+                        }
+
                       });
                     console.log('set it to high push');
                   } else {
@@ -1241,10 +1453,10 @@ function matchCenterComparison(parentUser, eBayResults) {
       message: 'No work done, expression failed'
     });
   }
-  //return matchCenterComparisonPromise;  
+  //return matchCenterComparisonPromise;
 
 }
- 
+
 
 
 
@@ -1256,7 +1468,7 @@ Parse.Cloud.job("MatchCenterBackgroundTEST", function(request, status) {
   Parse.Cloud.useMasterKey();
   var usersQuery = new Parse.Query(Parse.User);
 
-  // For each user in the DB...       
+  // For each user in the DB...
   return usersQuery.each(function(user) {
       // Run processUser fxn
       return processUserTEST(user)
@@ -1274,7 +1486,7 @@ Parse.Cloud.job("MatchCenterBackgroundTEST", function(request, status) {
     });
 });
 
-// Ping eBay with all matchCenterItems and their criteria (price, condition, location) 
+// Ping eBay with all matchCenterItems and their criteria (price, condition, location)
 function processUserTEST(user) {
   // ... code to setup per-user query ...
   var matchCenterItem = Parse.Object.extend("matchCenterItem");
@@ -1292,7 +1504,7 @@ function processUserTEST(user) {
     .then(function(results) {
       // process results, populate shared data (promises and searchTerms)
       //console.log('matchCenterItem query results:' + results);
-      
+
       // If user has at least one matchCenterItem...
       if (results.length > 0) {
         console.log('User has MatchCenter Items');
@@ -1308,7 +1520,7 @@ function processUserTEST(user) {
           url = 'http://svcs.ebay.com/services/search/FindingService/v1';
           //push function containing criteria for every matchCenterItem into promises array
           shared.promises.push((function() {
-            // If item location = US... 
+            // If item location = US...
             if (results[i].get('itemLocation') == 'US') {
               console.log('americuh!');
               var httpRequestPromise = Parse.Cloud.httpRequest({
@@ -1316,7 +1528,7 @@ function processUserTEST(user) {
                 params: {
                   'OPERATION-NAME': 'findItemsByKeywords',
                   'SERVICE-VERSION': '1.12.0',
-                  'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+                  'SECURITY-APPNAME': 'APPNAME GOES HERE',
                   'GLOBAL-ID': 'EBAY-US',
                   'RESPONSE-DATA-FORMAT': 'JSON',
                   'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1332,8 +1544,8 @@ function processUserTEST(user) {
                   'keywords': results[i].get('searchTerm'),
                 }
               });
-            } 
-            // If item location = WorldWide... 
+            }
+            // If item location = WorldWide...
             else if (results[i].get('itemLocation') == 'WorldWide') {
           console.log('Mr worlwide!');
           var httpRequestPromise = Parse.Cloud.httpRequest({
@@ -1341,7 +1553,7 @@ function processUserTEST(user) {
             params: {
               'OPERATION-NAME': 'findItemsByKeywords',
               'SERVICE-VERSION': '1.12.0',
-              'SECURITY-APPNAME': '*APPNAME GOES HERE*',
+              'SECURITY-APPNAME': 'APPNAME GOES HERE',
               'GLOBAL-ID': 'EBAY-US',
               'RESPONSE-DATA-FORMAT': 'JSON',
               'REST-PAYLOAD&sortOrder': 'BestMatch',
@@ -1375,26 +1587,26 @@ function processUserTEST(user) {
             top3List: [],
             searchTermsList: [],
           };
-          
+
           for (var i = 0; i < arguments.length; i++) {
             var httpResponse = arguments[i];
             // since they're in the same order, this is OK:
             var searchTerm = shared.searchTerms[i];
-              
+
             //console.log('The httpResponse.text we use is this:' + httpResponse.text);
             console.log('The searchTerm we use is this:' + searchTerm);
-            
+
             var BERP_Result = buildEbayRequestPromisesTEST(httpResponse.text, searchTerm);
-            
+
             console.log ('buildEbayRequestPromisesResult:' + BERP_Result);
-              
-            if (BERP_Result !== false)  { 
-                
+
+            if (BERP_Result !== false)  {
+
                 console.log('BERP_Result isnt false! Yay!');
-                
+
                 MCI_Comparison_Data.top3List.push(BERP_Result['Top 3']);
-                MCI_Comparison_Data.searchTermsList.push(searchTerm);  
-                
+                MCI_Comparison_Data.searchTermsList.push(searchTerm);
+
                 console.log('The searchTerm here iiiiiiiiiisss:' + shared.searchTerms[i]);
                 // Check to see if MCI_Item entry exists
                 var MCI_Results = Parse.Object.extend("MCI_Results");
@@ -1413,18 +1625,18 @@ function processUserTEST(user) {
                         newMCI_Results.set("searchTerm", searchTerm);
                         newMCI_Results.set("Results", BERP_Result['Top 3']);
                         newMCI_Results.set("parent", user);
-                        newMCI_Results.save(); 
+                        newMCI_Results.save();
 
                         console.log('this is the part where the item shouldve been saved');
                     }
                 });
             }
-              
+
             else {
                 console.log('dude isnt following any items broski');
             }
           }
-            
+
           return MCI_Comparison_Data;
         });
     });
@@ -1437,9 +1649,9 @@ function buildEbayRequestPromisesTEST(eBayResponseText, shared) {
   var ebayResponse = JSON.parse(eBayResponseText);
   var matchCenterItems = [];
 
-  //Parses through ebay's response, pushes each individual item and its properties into an array  
+  //Parses through ebay's response, pushes each individual item and its properties into an array
   ebayResponse.findItemsByKeywordsResponse.forEach(function(itemByKeywordsResponse) {
-      
+
     if (itemByKeywordsResponse.searchResult){
         itemByKeywordsResponse.searchResult.forEach(function(result) {
           if (result.item) {
@@ -1449,7 +1661,7 @@ function buildEbayRequestPromisesTEST(eBayResponseText, shared) {
           }
         });
     }
-      
+
   });
 
   //where the title, price, and img url are set
@@ -1469,14 +1681,14 @@ function buildEbayRequestPromisesTEST(eBayResponseText, shared) {
         'Item URL': item.viewItemURL[0]
       });
     });
-      
+
     return top3;
-  } 
-    
-  else {
-    return false;     
   }
-  
+
+  else {
+    return false;
+  }
+
 }
 
 // compare eBayResults to the users MCItems Array in their MComparisonArray object
@@ -1486,26 +1698,26 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
 
   var top3List = MCI_Comparison_Data.top3List;
   var searchTermsList =  MCI_Comparison_Data.searchTermsList;
-    
+
   // If eBay finds results for at least one MCI
   if (searchTermsList.length > 0) {
     console.log('yes the ebay results be longer than 0');
 
-    
+
     for (var i = 0; (i < top3List.length) && (i < searchTermsList.length); i++){
-        
+
         console.log('searchTermsList[i] is:' + searchTermsList[i]);
         console.log('top3List[i] is:' + top3List[i]);
-        
+
         var DaSearchTerm = searchTermsList[i];
         var DaTop3List = top3List[i];
-        
+
         console.log('DaSearchTerm is:' + DaSearchTerm);
         console.log('DaTop3List is:' + DaTop3List);
-        
+
         var MCI_Results = Parse.Object.extend("MCI_Results");
         var MCI_Results_Comparison_Query = new Parse.Query(MCI_Results);
-        
+
         // Compare respective items' MCI_Results array to eBay results (top3List[i])
         MCI_Results_Comparison_Query.equalTo('parent', user);
         MCI_Results_Comparison_Query.contains('searchTerm', DaSearchTerm);
@@ -1514,13 +1726,13 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
         MCI_Results_Comparison_Query.find()
           .then(function(results) {
             console.log('results length iiizzzzzz:' + results.length);
-            
-            // No new items, Results and top3List[i] are identical                     
+
+            // No new items, Results and top3List[i] are identical
             if (results.length > 0) {
               console.log("No new items, you're good to go!");
               //Add user to the "DON'T send push notification" channel
               ////////
-                
+
               // Find MCI_Results object for specific item
               var MCI_Results_Update_Query = new Parse.Query(MCI_Results);
               MCI_Results_Update_Query.equalTo('parent', user);
@@ -1538,7 +1750,7 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
 
                       console.log('totally just updated the MCI_Results, NBD');
                   }
-                  
+
                 })
                 .then(function() {
                     var installationQuery = new Parse.Query(Parse.Installation);
@@ -1550,14 +1762,14 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
                     });
                     ///////
                     console.log('done updating channel');
-                 });    
-              
+                 });
+
             }
 
             // New items found, Results and top3List[i] don't match
             else {
               console.log('no matching MCI_Results, lets push some new hit');
-                
+
               // Find MCI_Results object for specific item
               var MCI_Results_Update_Query = new Parse.Query(MCI_Results);
               MCI_Results_Update_Query.equalTo('parent', user);
@@ -1576,7 +1788,7 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
 
                       console.log('totally just updated the MCI_Results, NBD');
                   }
-                  
+
                 })
                 .then(function() {
 //                  // Check for high priority MC items
@@ -1614,19 +1826,19 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
                   console.log('done updating channel');
                 });
             }
-            
+
           });
     }
-    
+
     matchCenterComparisonPromise.resolve(console.log('MatchCenterComparison Suceeded sen!'));
   } else {
     matchCenterComparisonPromise.reject({
       message: 'No work done, expression failed'
     });
   }
-  //return matchCenterComparisonPromise;  
+  //return matchCenterComparisonPromise;
 }
-///////////////// 
+/////////////////
 
 
 
@@ -1639,7 +1851,7 @@ Parse.Cloud.job("sendHighPush", function(request, status) {
 
   Parse.Cloud.useMasterKey();
    /////////////
-   //send push notification to all users in the "yesPush" channel 
+   //send push notification to all users in the "yesPush" channel
 
    Parse.Push.send({
      channels: ["highPush"],
@@ -1648,7 +1860,7 @@ Parse.Cloud.job("sendHighPush", function(request, status) {
      alert: "New match found!",
      badge: "Increment"
      }
-   }, 
+   },
    {
      success: function() {
         // Push was successful
@@ -1678,7 +1890,7 @@ Parse.Cloud.job("sendLowPush", function(request, status) {
 
   Parse.Cloud.useMasterKey();
    /////////////
-   //send push notification to all users in the "lowPush" channel 
+   //send push notification to all users in the "lowPush" channel
 
   //{Query the # value of pushIncrement with object id hKj2Eazz6h}
   var pushIncrement = Parse.Object.extend("pushIncrement");
@@ -1717,7 +1929,7 @@ Parse.Cloud.job("sendLowPush", function(request, status) {
              alert: "New match found!",
              badge: "Increment"
              }
-           }, 
+           },
            {
              success: function() {
                 // Push was successful
@@ -1819,7 +2031,7 @@ Parse.Cloud.define("editMatchCenter", function(request, response) {
 
   query.first({
     success: function(results) {
-           
+
       results.set('minPrice', request.params.minPrice);
       results.set('maxPrice', request.params.maxPrice);
       results.set('itemCondition', request.params.itemCondition);
@@ -1827,7 +2039,7 @@ Parse.Cloud.define("editMatchCenter", function(request, response) {
       results.set('itemPriority', request.params.itemPriority);
 
       results.save().then(function(
-        savedMatchCenterItem){response.success('MatchCenterItem successfully edited!'); 
+        savedMatchCenterItem){response.success('MatchCenterItem successfully edited!');
       });
 
     },
@@ -1849,8 +2061,8 @@ Parse.Cloud.define("editMatchCenter2", function(request, response) {
 
   query.first({
     success: function(results) {
-        
-      results.set('searchTerm', request.params.newSearchTerm);    
+
+      results.set('searchTerm', request.params.newSearchTerm);
       results.set('minPrice', request.params.minPrice);
       results.set('maxPrice', request.params.maxPrice);
       results.set('itemCondition', request.params.itemCondition);
@@ -1858,7 +2070,7 @@ Parse.Cloud.define("editMatchCenter2", function(request, response) {
       results.set('itemPriority', request.params.itemPriority);
 
       results.save().then(function(
-        savedMatchCenterItem){response.success('MatchCenterItem successfully edited!'); 
+        savedMatchCenterItem){response.success('MatchCenterItem successfully edited!');
       });
 
     },
@@ -1868,19 +2080,3 @@ Parse.Cloud.define("editMatchCenter2", function(request, response) {
   });
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

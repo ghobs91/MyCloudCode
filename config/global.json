@@ -1,0 +1,14 @@
+{
+  "global": {
+    "parseVersion": "1.4.2"
+  },
+  "applications": {
+    "Denarri": {
+      "applicationId": "VWUSifMqZ7BHMfHo3XqG3C47Uo8Jl88aLa1aKocs",
+      "masterKey": "a5jHnzVnIjtcORe79qfogmoaY5DdQNeS03urEstM"
+    },
+    "_default": {
+      "link": "Denarri"
+    }
+  }
+}

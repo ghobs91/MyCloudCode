@@ -735,6 +735,7 @@ Parse.Cloud.define("MatchCenter2", function(request, response) {
     });
 });
 
+// Current MatchCenter being used, the others are kept for legacy purposes.
 Parse.Cloud.define("MatchCenter3", function(request, response) {
     //defines which parse class to iterate through
     var matchCenterItem = Parse.Object.extend("matchCenterItem");
@@ -853,21 +854,16 @@ Parse.Cloud.define("MatchCenter3", function(request, response) {
 
                         var matchCenterItems = [];
                         //Parses through ebay's response, pushes each individual item and its properties into an array  
-                        ebayResponse.findItemsByKeywordsResponse.forEach(function(itemByKeywordsResponse) {
-
+                        ebayResponse.findItemsByKeywordsResponse.forEach(function(itemByKeywordsResponse)                         {
                             if (itemByKeywordsResponse.searchResult) {
-
                                 itemByKeywordsResponse.searchResult.forEach(function(result) {
-
                                     if (result.item) {
                                         result.item.forEach(function(item) {
                                             matchCenterItems.push(item);
                                         });
                                     }
-
                                 });
                             }
-
                         });
 
                         // Creates array of items and their properties for every MC Item
@@ -912,6 +908,8 @@ Parse.Cloud.define("MatchCenter3", function(request, response) {
         });
 });
 
+
+// Checks for new matches serverside to determine if user should receive Push Notification
 Parse.Cloud.job("MatchCenterBackground", function(request, status) {
     // ... other code to setup usersQuery ...
     Parse.Cloud.useMasterKey();
@@ -1214,6 +1212,8 @@ function matchCenterComparison(parentUser, eBayResults) {
     //return matchCenterComparisonPromise;  
 
 }
+
+
 
 Parse.Cloud.job("MatchCenterBackgroundTEST", function(request, status) {
     // ... other code to setup usersQuery ...
@@ -1604,6 +1604,8 @@ function matchCenterComparisonTEST(user, MCI_Comparison_Data) {
         //return matchCenterComparisonPromise;  
     }
 
+
+// Push notifications sent to users with High priority items
 Parse.Cloud.job("sendHighPush", function(request, status) {
 
     Parse.Cloud.useMasterKey();
@@ -1700,6 +1702,7 @@ Parse.Cloud.job("sendHighPushTEST", function(request, status) {
 
 });
 
+// Push notifications sent to users with Low priority items
 Parse.Cloud.job("sendLowPush", function(request, status) {
 
     Parse.Cloud.useMasterKey();
